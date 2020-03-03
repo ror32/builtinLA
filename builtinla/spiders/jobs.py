@@ -38,6 +38,7 @@ class JobsSpider(CrawlSpider):
             yield {
                 'job_link': link.xpath(".//@href").get()
             }
+            
 
         next_page = response.xpath("//li[@class='pager__item pager__item--next']/a/@href").get()
         if next_page:
