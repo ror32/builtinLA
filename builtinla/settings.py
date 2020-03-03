@@ -18,7 +18,7 @@ NEWSPIDER_MODULE = 'builtinla.spiders'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'builtinla (+http://www.yourdomain.com)'
 
-# Obey robots.txt rules
+# Obey robots.txt rules 
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
