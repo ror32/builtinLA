@@ -6,15 +6,24 @@ from scrapy.spiders import CrawlSpider, Rule
 
 
 class JobsSpider(CrawlSpider):
-    name = 'jobs'
+    name = 'jobs2'
     allowed_domains = ['builtinla.com/jobs']
 
     script = '''
         function main(splash, args)
-        assert(splash:go(args.url))
-        assert(splash:wait(0.5))
-        return {
-            html = splash:html()
+            splash.private_mode_enabled = false
+            
+            splash:on_request(function(request)
+                request:set_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36')
+            end)
+            
+            url = args.url
+            assert(splash:go(url))
+            assert(splash:wait(3))            
+            
+            
+            return {
+                html = splash:html()
             }
         end
     '''
@@ -26,20 +35,9 @@ class JobsSpider(CrawlSpider):
 
     def parse(self, response):
         for link in response.xpath("//div[@class='wrap-view-page']/a"):
-            url = link.xpath(".//@href").get()
-            abs_url = f"https://www.builtinla.com{url}"
-
-            yield scrapy.Request(
-                url=abs_url,
-                headers={
-                    'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
-                },
-                callback=self.parse_item,
-                dont_filter=True
-            )
-            # yield {
-            #     'job_link': abs_url
-            # }
+            yield {
+                'job_link': link.xpath(".//@href").get()
+            }
             
 
         next_page = response.xpath("//li[@class='pager__item pager__item--next']/a/@href").get()
@@ -50,16 +48,13 @@ class JobsSpider(CrawlSpider):
             })
 
     rules = (
-        Rule(LinkExtractor(allow=r'job/'),
+        Rule(LinkExtractor(allow=r'Items/'),
              callback='parse_item', follow=True),
     )
 
     def parse_item(self, response):
-        response
         item = {}
-        item['start_url'] = response.request.url
-        item['title'] = response.xpath('//h1[@class="node-title"]/span/text()').get()
-        item['company'] = response.xpath('//div[@class="field__item"]/a/text()').get()
-        item['company_link'] = 'https://www.builtinla.com' + response.xpath('//div[@class="field__item"]/a/@href').get()
-        item['location'] = response.xpath('//div[@class="job-info"]/span/text()').get()
-        yield item
+        #item['domain_id'] = response.xpath('//input[@id="sid"]/@value').get()
+        #item['name'] = response.xpath('//div[@id="name"]').get()
+        #item['description'] = response.xpath('//div[@id="description"]').get()
+        return item
