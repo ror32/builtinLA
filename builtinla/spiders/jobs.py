@@ -20,7 +20,9 @@ class JobsSpider(CrawlSpider):
     '''
 
     def start_requests(self):
-        yield SplashRequest(url="https://www.builtinla.com/jobs?f%5B0%5D=job-category_operations-operations-management", callback=self.parse, endpoint="execute", args={
+        my_url = "https://www.builtinla.com/jobs?f%5B0%5D=job-category_developer-engineer-python&f%5B1%5D=job-category_developer-engineer-ruby-on-rails"
+        #my_url ="https://www.builtinla.com/jobs?f%5B0%5D=job-category_operations-operations-management"
+        yield SplashRequest(url=my_url, callback=self.parse, endpoint="execute", args={
             'lua_source': self.script
         })
 
@@ -37,11 +39,8 @@ class JobsSpider(CrawlSpider):
                 callback=self.parse_item,
                 dont_filter=True
             )
-            # yield {
-            #     'job_link': abs_url
-            # }
-            
 
+            
         next_page = response.xpath("//li[@class='pager__item pager__item--next']/a/@href").get()
         if next_page:
             absolute_url = f"https://www.builtinla.com/jobs{next_page}"
