@@ -9,16 +9,6 @@ class JobsSpider(CrawlSpider):
     name = 'jobs'
     allowed_domains = ['builtinla.com/jobs']
 
-    # script = '''
-    #     function main(splash, args)
-    #     assert(splash:go(args.url))
-    #     assert(splash:wait(0.5))
-    #     return {
-    #         html = splash:html()
-    #         }
-    #     end
-    # '''
-
     script = '''
         function main(splash, args)
         splash:on_request(function(request)
